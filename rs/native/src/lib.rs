@@ -31,10 +31,6 @@ pub struct Blake3Hash {
 
 declare_types! {
     pub class JsHash for Blake3Hash {
-        // Constructing is awkward in neon, so this is how this works:
-        // 0 args = new regular hash
-        // 1 args = use the first arg (a Buffer) as the key
-        // 2 args = use the second arg (a String) to derive a key
         init(mut cx) {
             let hasher = match cx.len() {
                 0 => blake3::Hasher::new(),
@@ -130,8 +126,6 @@ declare_types! {
         }
 
         method set_position(mut cx) {
-            // Neon bindings don't support bigint, so use a buffer instead
-            // https://github.com/neon-bindings/neon/issues/376
             let position_arg = cx.argument::<JsBuffer>(0)?;
             let position_slice = cx.borrow(&position_arg, |p| p.as_slice::<u8>());
 
